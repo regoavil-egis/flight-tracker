@@ -1,0 +1,2 @@
+# This project uses only the Python standard library — no external packages needed.
+# Kept as an empty file so GitHub Actions setup-python steps that expect it don't fail.

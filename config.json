@@ -1,0 +1,19 @@
+{
+  "destination": "LIM",
+  "destination_name": "Lima, Peru",
+  "currency": "USD",
+  "adults": 1,
+  "cabin_class": "economy",
+  "routes": [
+    {"label": "California (LAX/SFO)",      "departure_ids": ["LAX", "SFO"]},
+    {"label": "Puerto Rico (SJU)",         "departure_ids": ["SJU"]},
+    {"label": "Toronto (YYZ)",             "departure_ids": ["YYZ"]},
+    {"label": "South Carolina (CHS)",      "departure_ids": ["CHS"]},
+    {"label": "Texas (DFW/IAH)",           "departure_ids": ["DFW", "IAH"]}
+  ],
+  "date_windows": [
+    {"label": "Jun 27 – Jul 5",  "outbound": "2026-06-27", "return": "2026-07-05"},
+    {"label": "Jul 4 – Jul 12",  "outbound": "2026-07-04", "return": "2026-07-12"},
+    {"label": "Jul 11 – Jul 19", "outbound": "2026-07-11", "return": "2026-07-19"}
+  ]
+}
