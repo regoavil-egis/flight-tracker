@@ -1,0 +1,47 @@
+name: Daily flight prices
+
+on:
+  # 13:00 UTC = 9:00 AM ET during EDT (Mar–Nov). During EST (Nov–Mar) this
+  # will fire at 8:00 AM ET. To stay on 9:00 AM during EST, change to "0 14 * * *"
+  # for the winter months, or accept the 1-hour seasonal drift.
+  schedule:
+    - cron: "0 13 * * *"
+  # Lets you trigger a manual run from the GitHub Actions tab.
+  workflow_dispatch:
+
+# Prevent two concurrent runs (e.g. cron + manual at the same time).
+concurrency:
+  group: daily-flights
+  cancel-in-progress: false
+
+jobs:
+  fetch-and-notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run flight tracker
+        env:
+          SERPAPI_KEY:        ${{ secrets.SERPAPI_KEY }}
+          SLACK_WEBHOOK_URL:  ${{ secrets.SLACK_WEBHOOK_URL }}
+          GMAIL_USER:         ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_TO:           ${{ secrets.GMAIL_TO }}
+        run: python flight_prices.py
+
+      - name: Upload results.json as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ github.run_id }}
+          path: results.json
+          if-no-files-found: ignore
+          retention-days: 30
