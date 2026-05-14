@@ -1,0 +1,42 @@
+name: Daily flight prices
+
+   on:
+     schedule:
+       - cron: "0 13 * * *"
+     workflow_dispatch:
+
+   concurrency:
+     group: daily-flights
+     cancel-in-progress: false
+
+   jobs:
+     fetch-and-notify:
+       runs-on: ubuntu-latest
+       timeout-minutes: 10
+
+       steps:
+         - name: Check out repo
+           uses: actions/checkout@v4
+
+         - name: Set up Python
+           uses: actions/setup-python@v5
+           with:
+             python-version: "3.11"
+
+         - name: Run flight tracker
+           env:
+             SERPAPI_KEY:        ${{ secrets.SERPAPI_KEY }}
+             SLACK_WEBHOOK_URL:  ${{ secrets.SLACK_WEBHOOK_URL }}
+             GMAIL_USER:         ${{ secrets.GMAIL_USER }}
+             GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+             GMAIL_TO:           ${{ secrets.GMAIL_TO }}
+           run: python flight_prices.py
+
+         - name: Upload results.json as artifact
+           if: always()
+           uses: actions/upload-artifact@v4
+           with:
+             name: results-${{ github.run_id }}
+             path: results.json
+             if-no-files-found: ignore
+             retention-days: 30
